@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smooth Text Flip Effect</title>
+    <style>
+        @font-face {
+            font-family: 'Geist Sans';
+            src: url('https://assets.codepen.io/605876/GeistVF.ttf');
+        }
+
+        *,
+        *::before,
+        *::after {
+            transform-style: preserve-3d;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            margin: 0;
+            color: #fff;
+            font-family: 'Geist Sans', sans-serif;
+        }
+
+        .words,
+        .word,
+        .char,
+        .char::before,
+        .char::after {
+            transform-style: preserve-3d;
+            display: inline-block;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            perspective: 1000px;
+        }
+
+        p {
+            --font-level: 4;
+            margin: 0;
+            font-family: 'Geist Sans', sans-serif;
+            font-weight: 120;
+            text-decoration: none;
+            width: fit-content;
+            line-height: 1;
+            vertical-align: baseline;
+        }
+
+        p:nth-of-type(1) { --idx: 0; }
+        p:nth-of-type(2) { --idx: 1; }
+        p:nth-of-type(3) { --idx: 2; }
+        p:nth-of-type(4) { --idx: 3; }
+
+        .char {
+            --duration: 2.2s;
+            --delay: calc(
+                (
+                    sin((var(--char-index) / var(--char-total)) * 90deg) *
+                    (var(--duration) * 0.25)
+                ) - (var(--idx) * -0.25s)
+            );
+            display: inline-block;
+            color: transparent;
+            position: relative;
+            height: 0.9lh;
+            line-height: 1;
+            vertical-align: middle;
+            animation: flip var(--duration) var(--delay) infinite ease;
+        }
+
+        .char::after,
+        .char::before {
+            color: #fff;
+            content: attr(data-char);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 1lh;
+            width: 100%;
+            animation: fade var(--duration) var(--delay) infinite ease;
+        }
+
+        .char::before {
+            transform-origin: 50% 50%;
+            translate: -50% -50%;
+            transform: rotateX(-90deg) translate3d(0, 0, 0.45lh);
+            opacity: 0;
+            --opacity: 1;
+        }
+
+        .char::after {
+            translate: -50% -50%;
+            transform: translate3d(0, 0, 0.45lh);
+        }
+
+        @keyframes flip {
+            25%, 100% {
+                transform: rotateX(90deg);
+            }
+        }
+
+        @keyframes fade {
+            30%, 100% {
+                opacity: var(--opacity, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <p>Contribute to open-source.</p>
+        <p>Cool Effect.</p>
+        <p>CSS : Try in tailwind.</p>
+    </main>
+
+    <script>
+        function splitText() {
+    document.querySelectorAll('p').forEach((element) => {
+        const text = element.textContent;
+        element.textContent = '';
+        const chars = [...text];
+        
+        chars.forEach((char, index) => {
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.setAttribute('data-char', char === ' ' ? '\u00A0' : char);
+            span.style.setProperty('--char-index', index);
+            span.style.setProperty('--char-total', chars.length);
+            span.textContent = char === ' ' ? '\u00A0' : char; 
+            element.appendChild(span);
+        });
+    });
+}
+
+
+        splitText();
+    </script>
+</body>
+</html>
